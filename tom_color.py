@@ -59,16 +59,15 @@ def random_fill(height, width, palette):
 def hex_to_rgb(hex_str):
     """Transform a string representing a hex value into a RGB list."""
     ret = [int(hex_str[0:2], 16), int(hex_str[2:4], 16), int(hex_str[4:6], 16)]
-    print(ret)
     return ret
 
 def hex_list_to_palette(hex_list):
     return list(map(hex_to_rgb, hex_list))
 
-hex_list = ["7b25bd", "a825bd", "d2bd25", "555555", "4a0792", "322c38"]
-print(hex_list_to_palette(hex_list))
-    
-_png = random_fill(10, 5, hex_list_to_palette(hex_list)) 
+if __name__ == "__name__":
+    hex_list = ["7b25bd", "a825bd", "d2bd25", "555555", "4a0792", "322c38"]
+        
+    _png = random_fill(10, 5, hex_list_to_palette(hex_list)) 
 
-make_png(expand_image_with_margin(_png, 10, 3, [255, 255, 255]), "lol.png")
+    make_png(expand_image_with_margin(_png, 10, 3, [255, 255, 255]), "lol.png")
 
