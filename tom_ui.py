@@ -16,7 +16,7 @@ class TomUI(Tk):
         w.grid(row=0, column=0)
         self.color_labels = []
         self.set_color_labels()
-        set_color = Button(self, text="Valider nombre de couleur", command=self.set_color_labels)
+        set_color = Button(self, text="Valider nombre de couleurs", command=self.set_color_labels)
         set_color.grid(row=0, column=1)
         # Other parameters
         Label(text="Couleur de la marge").grid(row=0, column=2)
