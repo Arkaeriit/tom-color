@@ -76,7 +76,7 @@ class TomUI(Tk):
         if not color_valid(str(self.margin_color.get())):
             return False, f"La couleur de marge doit être un code couleur hexadécimal de 6 chiffres (123ABC, 00FF12)"
         try:
-            with open(self.out, "w") as f:
+            with open(self.out, "a") as f:
                 pass
             if self.out[-4:] != ".png":
                 raise Exception()
