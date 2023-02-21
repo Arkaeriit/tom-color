@@ -83,7 +83,7 @@ class TomUI(Tk):
         except:
             return False, "Le fichier de destination doit être un png valide."
         try:
-            if int(self.margin_size.get()) <= 0 or int(self.block_size.get()) <= 0:
+            if int(self.margin_size.get()) < 0 or int(self.block_size.get()) <= 0:
                 raise Exception()
         except:
             return False, "La taille des blocks et des marges doivent êtres des nombres positifs."
