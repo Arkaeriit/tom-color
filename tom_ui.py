@@ -3,11 +3,25 @@
 from tkinter import *
 from tom_color import *
 from tkinter import filedialog
+import sys
+import os
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 class TomUI(Tk):
 
     def __init__(self):
         super().__init__()
+        self.title("Tom Color")
+        self.iconbitmap(resource_path("tom_color.ico")) 
         # Color choise
         number_color_choise = list(range(1,31))
         self.number_color = StringVar(self)
