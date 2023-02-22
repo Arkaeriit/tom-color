@@ -7,9 +7,10 @@ def make_png(data, filename):
     """Make a png of a table of lines"""
     img = []
     for line in data:
-        row = ()
+        row = []
         for x in line:
-            row = row + (x[0], x[1], x[2])
+            for i in range(3):
+                row.append(x[i])
         img.append(row)
     with open(filename, 'wb') as f:
         w = png.Writer(len(data[0]), len(data), greyscale=False)
