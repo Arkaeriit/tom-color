@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from tkinter import *
+from time import sleep
 from tom_color import *
 from tkinter import filedialog
 
@@ -47,17 +48,23 @@ class TomUI(Tk):
     def generate(self):
         ok, msg = self.sanitize()
         if ok:
+            self.raport.config(text="Génération en cours...", fg="blue")
+            self.update()
             colors = []
             for color in self.color_labels:
                 colors.append(str(color[1].get()))
             palette = hex_list_to_palette(colors)
-            self.raport.config(text="Palette générée", fg="yellow")
+            self.raport.config(text="Palette générée", fg="blue")
+            self.update()
             base_grid = random_fill(int(self.height.get()), int(self.width.get()), palette)
-            self.raport.config(text="Image aléatoire créée", fg="yellow")
+            self.raport.config(text="Image aléatoire créée", fg="blue")
+            self.update()
             expanded = expand_image_with_margin(base_grid, int(self.block_size.get()), int(self.margin_size.get()), hex_to_rgb(self.margin_color.get()))
-            self.raport.config(text="Image finale dessinée", fg="yellow")
+            self.raport.config(text="Image finale dessinée", fg="blue")
+            self.update()
             make_png(expanded, self.out)
             self.raport.config(text="Nickel, chrome", fg="green")
+            self.update()
         else:
             self.raport.config(text=msg, fg="red")
 
