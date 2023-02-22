@@ -5,6 +5,13 @@ from time import sleep
 from tom_color import *
 from tkinter import filedialog
 
+def hex_entry_cb(sv):
+    ss = ""
+    for c in sv.get()[0:6]:
+        if c.lower() in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]:
+            ss += c
+    sv.set(ss)
+
 class TomUI(Tk):
 
     def __init__(self):
@@ -21,7 +28,9 @@ class TomUI(Tk):
         set_color.grid(row=0, column=1)
         # Other parameters
         Label(text="Couleur de la marge").grid(row=0, column=2)
-        self.margin_color = Entry(text="", fg="black", bg="white")
+        sv = StringVar()
+        sv.trace("w", lambda name, index, mode, sv=sv: hex_entry_cb(sv))
+        self.margin_color = Entry(self, textvariable=sv, fg="black", bg="white")
         self.margin_color.grid(row=0, column=3)
         Label(text="Taille des blocks").grid(row=1, column=2)
         self.block_size = Entry(text="", fg="black", bg="white")
@@ -110,8 +119,10 @@ class TomUI(Tk):
             self.color_labels[0][1].grid_forget()
             self.color_labels.pop(0)
         for i in range(int(str(self.number_color.get()))):
-            label = Label(text=f"Couleur {1+i}")
-            entry = Entry(text="", fg="black", bg="white")
+            sv = StringVar()
+            sv.trace("w", lambda name, index, mode, sv=sv: hex_entry_cb(sv))
+            label = Label(self, text=f"Couleur {1+i}")
+            entry = Entry(self, textvariable=sv, fg="black", bg="white")
             label.grid(row=1+i, column=0)
             entry.grid(row=1+i, column=1)
             self.color_labels.append((label, entry))
