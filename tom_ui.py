@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 
 from tkinter import *
+from time import sleep
 from tom_color import *
 from tkinter import filedialog
+
+def hex_entry_cb(sv):
+    ss = ""
+    for c in sv.get()[0:6]:
+        if c.lower() in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]:
+            ss += c
+    sv.set(ss)
 
 class TomUI(Tk):
 
@@ -16,11 +24,13 @@ class TomUI(Tk):
         w.grid(row=0, column=0)
         self.color_labels = []
         self.set_color_labels()
-        set_color = Button(self, text="Valider nombre de couleur", command=self.set_color_labels)
+        set_color = Button(self, text="Valider nombre de couleurs", command=self.set_color_labels)
         set_color.grid(row=0, column=1)
         # Other parameters
         Label(text="Couleur de la marge").grid(row=0, column=2)
-        self.margin_color = Entry(text="", fg="black", bg="white")
+        sv = StringVar()
+        sv.trace("w", lambda name, index, mode, sv=sv: hex_entry_cb(sv))
+        self.margin_color = Entry(self, textvariable=sv, fg="black", bg="white")
         self.margin_color.grid(row=0, column=3)
         Label(text="Taille des blocks").grid(row=1, column=2)
         self.block_size = Entry(text="", fg="black", bg="white")
@@ -47,14 +57,23 @@ class TomUI(Tk):
     def generate(self):
         ok, msg = self.sanitize()
         if ok:
+            self.raport.config(text="Génération en cours...", fg="blue")
+            self.update()
             colors = []
             for color in self.color_labels:
                 colors.append(str(color[1].get()))
             palette = hex_list_to_palette(colors)
+            self.raport.config(text="Palette générée", fg="blue")
+            self.update()
             base_grid = random_fill(int(self.height.get()), int(self.width.get()), palette)
+            self.raport.config(text="Image aléatoire créée", fg="blue")
+            self.update()
             expanded = expand_image_with_margin(base_grid, int(self.block_size.get()), int(self.margin_size.get()), hex_to_rgb(self.margin_color.get()))
+            self.raport.config(text="Image finale dessinée", fg="blue")
+            self.update()
             make_png(expanded, self.out)
             self.raport.config(text="Nickel, chrome", fg="green")
+            self.update()
         else:
             self.raport.config(text=msg, fg="red")
 
@@ -76,14 +95,14 @@ class TomUI(Tk):
         if not color_valid(str(self.margin_color.get())):
             return False, f"La couleur de marge doit être un code couleur hexadécimal de 6 chiffres (123ABC, 00FF12)"
         try:
-            with open(self.out, "w") as f:
+            with open(self.out, "a") as f:
                 pass
             if self.out[-4:] != ".png":
                 raise Exception()
         except:
             return False, "Le fichier de destination doit être un png valide."
         try:
-            if int(self.margin_size.get()) <= 0 or int(self.block_size.get()) <= 0:
+            if int(self.margin_size.get()) < 0 or int(self.block_size.get()) <= 0:
                 raise Exception()
         except:
             return False, "La taille des blocks et des marges doivent êtres des nombres positifs."
@@ -100,8 +119,10 @@ class TomUI(Tk):
             self.color_labels[0][1].grid_forget()
             self.color_labels.pop(0)
         for i in range(int(str(self.number_color.get()))):
-            label = Label(text=f"Couleur {1+i}")
-            entry = Entry(text="", fg="black", bg="white")
+            sv = StringVar()
+            sv.trace("w", lambda name, index, mode, sv=sv: hex_entry_cb(sv))
+            label = Label(self, text=f"Couleur {1+i}")
+            entry = Entry(self, textvariable=sv, fg="black", bg="white")
             label.grid(row=1+i, column=0)
             entry.grid(row=1+i, column=1)
             self.color_labels.append((label, entry))

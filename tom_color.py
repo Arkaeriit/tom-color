@@ -7,9 +7,10 @@ def make_png(data, filename):
     """Make a png of a table of lines"""
     img = []
     for line in data:
-        row = ()
+        row = []
         for x in line:
-            row = row + (x[0], x[1], x[2])
+            for i in range(3):
+                row.append(x[i])
         img.append(row)
     with open(filename, 'wb') as f:
         w = png.Writer(len(data[0]), len(data), greyscale=False)
@@ -64,10 +65,10 @@ def hex_to_rgb(hex_str):
 def hex_list_to_palette(hex_list):
     return list(map(hex_to_rgb, hex_list))
 
-if __name__ == "__name__":
+if __name__ == "__main__":
     hex_list = ["7b25bd", "a825bd", "d2bd25", "555555", "4a0792", "322c38"]
         
     _png = random_fill(10, 5, hex_list_to_palette(hex_list)) 
 
-    make_png(expand_image_with_margin(_png, 10, 3, [255, 255, 255]), "lol.png")
+    make_png(expand_image_with_margin(_png, 100, 30, [255, 255, 255]), "lol.png")
 
