@@ -29,7 +29,10 @@ class TomUI(Tk):
     def __init__(self):
         super().__init__()
         self.title("Tom Color")
-        self.iconbitmap(resource_path("tom_color.ico")) 
+        try:
+            self.iconbitmap(resource_path("tom_color.ico")) 
+        except:
+            pass
         # Color choise
         number_color_choise = list(range(1,31))
         self.number_color = StringVar(self)
