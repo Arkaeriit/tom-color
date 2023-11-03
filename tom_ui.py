@@ -40,46 +40,57 @@ class TomUI(Tk):
         self.set_color_labels()
         set_color = Button(self, text="Valider nombre de couleurs", command=self.set_color_labels)
         set_color.grid(row=0, column=1)
+        Label(text="Nombre maximum de cette couleur").grid(row=0, column=2)
         # Other parameters
-        Label(text="Couleur de la marge").grid(row=0, column=2)
+        Label(text="Couleur de la marge").grid(row=0, column=3)
         sv = StringVar()
         sv.trace("w", lambda name, index, mode, sv=sv: hex_entry_cb(sv))
         self.margin_color = Entry(self, textvariable=sv, fg="black", bg="white")
-        self.margin_color.grid(row=0, column=3)
-        Label(text="Taille des blocks").grid(row=1, column=2)
+        self.margin_color.grid(row=0, column=4)
+        Label(text="Taille des blocks").grid(row=1, column=3)
         self.block_size = Entry(text="", fg="black", bg="white")
-        self.block_size.grid(row=1, column=3)
-        Label(text="Taille de la marge").grid(row=2, column=2)
+        self.block_size.grid(row=1, column=4)
+        Label(text="Taille de la marge").grid(row=2, column=3)
         self.margin_size = Entry(text="", fg="black", bg="white")
-        self.margin_size.grid(row=2, column=3)
-        Label(text="Blocks en largeur").grid(row=3, column=2)
+        self.margin_size.grid(row=2, column=4)
+        Label(text="Blocks en largeur").grid(row=3, column=3)
         self.width = Entry(text="", fg="black", bg="white")
-        self.width.grid(row=3, column=3)
-        Label(text="Blocks en hauteur").grid(row=4, column=2)
+        self.width.grid(row=3, column=4)
+        Label(text="Blocks en hauteur").grid(row=4, column=3)
         self.height = Entry(text="", fg="black", bg="white")
-        self.height.grid(row=4, column=3)
+        self.height.grid(row=4, column=4)
         # Output file
         self.out = ""
-        Button(self, text="Fichier destination", command=self.set_file).grid(row=5, column=2)
+        Button(self, text="Fichier destination", command=self.set_file).grid(row=5, column=3)
         self.out_label = Label(text="", fg="black", bg="white")
-        self.out_label.grid(row=5, column=3)
+        self.out_label.grid(row=5, column=4)
         # Generate and report
-        Button(self, text="Génération", command=self.generate).grid(row=6, column=2, columnspan=2)
+        Button(self, text="Génération", command=self.generate).grid(row=6, column=3, columnspan=2)
         self.raport = Label(text="", fg="white", bg="white")
-        self.raport.grid(row=7, column=2, columnspan=2)
+        self.raport.grid(row=7, column=2, columnspan=3)
 
     def generate(self):
         ok, msg = self.sanitize()
         if ok:
             self.raport.config(text="Génération en cours...", fg="blue")
             self.update()
+            max_of_colors = []
             colors = []
+            max_of_all_colors = int(self.height.get()) * int(self.width.get())
             for color in self.color_labels:
                 colors.append(str(color[1].get()))
+                if str(color[2].get()) == "":
+                    max_of_colors.append(max_of_all_colors)
+                else:
+                    max_of_colors.append(int(str(color[2].get())))                    
+            if sum(max_of_colors) < max_of_all_colors:
+                self.raport.config(text="Erreur, le nombre total de couleur max est trop faible", fg="red")
+                return
+
             palette = hex_list_to_palette(colors)
             self.raport.config(text="Palette générée", fg="blue")
             self.update()
-            base_grid = random_fill(int(self.height.get()), int(self.width.get()), palette)
+            base_grid = random_fill(int(self.height.get()), int(self.width.get()), palette, max_of_colors)
             self.raport.config(text="Image aléatoire créée", fg="blue")
             self.update()
             expanded = expand_image_with_margin(base_grid, int(self.block_size.get()), int(self.margin_size.get()), hex_to_rgb(self.margin_color.get()))
@@ -106,6 +117,8 @@ class TomUI(Tk):
         for i in range(len(self.color_labels)):
             if not color_valid(str(self.color_labels[i][1].get())):
                 return False, f"La couleur {i+1} doit être un code couleur hexadécimal de 6 chiffres (123ABC, 00FF12)"
+            if (not str(self.color_labels[i][2].get()) == "") and (not str(self.color_labels[i][2].get()).isnumeric()):
+                return False, f"La nombre max de la couleur {i+1} doit être un nombre valide"
         if not color_valid(str(self.margin_color.get())):
             return False, f"La couleur de marge doit être un code couleur hexadécimal de 6 chiffres (123ABC, 00FF12)"
         try:
@@ -131,15 +144,18 @@ class TomUI(Tk):
         for _ in range(len(self.color_labels)):
             self.color_labels[0][0].grid_forget()
             self.color_labels[0][1].grid_forget()
+            self.color_labels[0][2].grid_forget()
             self.color_labels.pop(0)
         for i in range(int(str(self.number_color.get()))):
             sv = StringVar()
             sv.trace("w", lambda name, index, mode, sv=sv: hex_entry_cb(sv))
             label = Label(self, text=f"Couleur {1+i}")
             entry = Entry(self, textvariable=sv, fg="black", bg="white")
+            entry_max_of_color = Entry(text="", fg="black", bg="white")
             label.grid(row=1+i, column=0)
             entry.grid(row=1+i, column=1)
-            self.color_labels.append((label, entry))
+            entry_max_of_color.grid(row=1+i, column=2)
+            self.color_labels.append((label, entry, entry_max_of_color))
 
 
 

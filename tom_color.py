@@ -47,13 +47,18 @@ def expand_image_with_margin(data, block_size, margin_size, margin_color):
             ret.append(line_out)
     return ret
 
-def random_fill(height, width, palette):
+def random_fill(height, width, palette, palette_max_count):
     """Create a picture by randomly choosing elements from a palette."""
     ret = []
+    color_count_map = {str(palette[i]): {"max": palette_max_count[i], "current": 0} for i in range(len(palette_max_count))}
     for _ in range(height):
         line = []
         for __ in range(width):
-            line.append(random.choice(palette))
+            color = random.choice(palette) 
+            while color_count_map[str(color)]["current"] >= color_count_map[str(color)]["max"]:
+                color = random.choice(palette) 
+            color_count_map[str(color)]["current"] += 1
+            line.append(color)
         ret.append(line)
     return ret
 
@@ -67,8 +72,9 @@ def hex_list_to_palette(hex_list):
 
 if __name__ == "__main__":
     hex_list = ["7b25bd", "a825bd", "d2bd25", "555555", "4a0792", "322c38"]
+    palette_max_count = [50 for i in range(len(hex_list))]
         
-    _png = random_fill(10, 5, hex_list_to_palette(hex_list)) 
+    _png = random_fill(10, 5, hex_list_to_palette(hex_list), palette_max_count)
 
     make_png(expand_image_with_margin(_png, 100, 30, [255, 255, 255]), "lol.png")
 
