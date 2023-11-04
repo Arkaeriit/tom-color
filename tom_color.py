@@ -52,14 +52,16 @@ def color_pick(palette, palette_max_count, number_of_pixels):
     colors."""
     ret = []
     color_count_map = {str(palette[i]): {"max": palette_max_count[i], "current": 0} for i in range(len(palette_max_count))}
-    for i in range(number_of_pixels):
+    while len(ret) < number_of_pixels:
+        if len(palette) == 0:
+            raise Exception("Erreur, pas assez de couleurs!")
         color = random.choice(palette) 
         color_count_map[str(color)]["current"] += 1
+        ret.append(color)
         if color_count_map[str(color)]["current"] >= color_count_map[str(color)]["max"]:
             palette.remove(color)
-            if len(palette) == 0:
-                raise Exception("Erreur, pas assez de couleurs!")
-        ret.append(color)
+            if color_count_map[str(color)]["max"] == 0: # In case we asked for 0 of a color
+                ret.pop()
     return ret
 
 

@@ -6,6 +6,7 @@ from tom_color import *
 from tkinter import filedialog
 import sys
 import os
+import traceback
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -97,6 +98,7 @@ class TomUI(Tk):
                 base_grid = random_fill(int(self.height.get()), int(self.width.get()), palette, max_of_colors)
             except Exception as e:
                 self.raport.config(text=repr(e), fg="red")
+                traceback.print_exception(type(e), e, e.__traceback__)
                 return
             self.raport.config(text="Image aléatoire créée", fg="blue")
             self.update()
