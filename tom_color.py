@@ -47,18 +47,32 @@ def expand_image_with_margin(data, block_size, margin_size, margin_color):
             ret.append(line_out)
     return ret
 
-def random_fill(height, width, palette, palette_max_count):
-    """Create a picture by randomly choosing elements from a palette."""
+def color_pick(palette, palette_max_count, number_of_pixels):
+    """From a palette and the max of each color, make a list of all usable
+    colors."""
     ret = []
     color_count_map = {str(palette[i]): {"max": palette_max_count[i], "current": 0} for i in range(len(palette_max_count))}
+    for i in range(number_of_pixels):
+        color = random.choice(palette) 
+        color_count_map[str(color)]["current"] += 1
+        if color_count_map[str(color)]["current"] >= color_count_map[str(color)]["max"]:
+            palette.remove(color)
+            if len(palette) == 0:
+                raise Exception("Erreur, pas assez de couleurs!")
+        ret.append(color)
+    return ret
+
+
+def random_fill(height, width, palette, palette_max_count):
+    """Create a picture by randomly choosing elements from a palette."""
+    list_of_pixels = color_pick(palette, palette_max_count, height * width)
+    ret = []
     for _ in range(height):
         line = []
         for __ in range(width):
-            color = random.choice(palette) 
-            while color_count_map[str(color)]["current"] >= color_count_map[str(color)]["max"]:
-                color = random.choice(palette) 
-            color_count_map[str(color)]["current"] += 1
-            line.append(color)
+            index = random.randrange(len(list_of_pixels))
+            line.append(list_of_pixels[index])
+            list_of_pixels.pop(index)
         ret.append(line)
     return ret
 
@@ -73,6 +87,7 @@ def hex_list_to_palette(hex_list):
 if __name__ == "__main__":
     hex_list = ["7b25bd", "a825bd", "d2bd25", "555555", "4a0792", "322c38"]
     palette_max_count = [50 for i in range(len(hex_list))]
+    palette_max_count[0] = 2
         
     _png = random_fill(10, 5, hex_list_to_palette(hex_list), palette_max_count)
 

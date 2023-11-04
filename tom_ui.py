@@ -93,7 +93,11 @@ class TomUI(Tk):
             palette = hex_list_to_palette(colors)
             self.raport.config(text="Palette générée", fg="blue")
             self.update()
-            base_grid = random_fill(int(self.height.get()), int(self.width.get()), palette, max_of_colors)
+            try:
+                base_grid = random_fill(int(self.height.get()), int(self.width.get()), palette, max_of_colors)
+            except Exception as e:
+                self.raport.config(text=repr(e), fg="red")
+                return
             self.raport.config(text="Image aléatoire créée", fg="blue")
             self.update()
             expanded = expand_image_with_margin(base_grid, int(self.block_size.get()), int(self.margin_size.get()), hex_to_rgb(self.margin_color.get()))
